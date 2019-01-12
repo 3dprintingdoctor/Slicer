@@ -69,7 +69,7 @@ class EndoscopyWidget(ScriptedLoadableModuleWidget):
     # Layout within the path collapsible button
     pathFormLayout = qt.QFormLayout(pathCollapsibleButton)
 
-    # Camera node selector
+    # Camera node first selector
     cameraNodeSelector = slicer.qMRMLNodeComboBox()
     cameraNodeSelector.objectName = 'cameraNodeSelector'
     cameraNodeSelector.toolTip = "Select a camera that will fly along this path."
@@ -82,7 +82,21 @@ class EndoscopyWidget(ScriptedLoadableModuleWidget):
     pathFormLayout.addRow("Camera:", cameraNodeSelector)
     self.parent.connect('mrmlSceneChanged(vtkMRMLScene*)',
                         cameraNodeSelector, 'setMRMLScene(vtkMRMLScene*)')
-
+    
+    # Camera node second selector
+    cameraNodeSelector = slicer.qMRMLNodeComboBox()
+    cameraNodeSelector.objectName = 'cameraNodeSelector'
+    cameraNodeSelector.toolTip = "Select a camera that will fly along this path."
+    cameraNodeSelector.nodeTypes = ['vtkMRMLCameraNode']
+    cameraNodeSelector.noneEnabled = False
+    cameraNodeSelector.addEnabled = False
+    cameraNodeSelector.removeEnabled = False
+    cameraNodeSelector.connect('currentNodeChanged(bool)', self.enableOrDisableCreateButton)
+    cameraNodeSelector.connect('currentNodeChanged(vtkMRMLNode*)', self.setCameraNode)
+    pathFormLayout.addRow("Camera:", cameraNodeSelector)
+    self.parent.connect('mrmlSceneChanged(vtkMRMLScene*)',
+                        cameraNodeSelector, 'setMRMLScene(vtkMRMLScene*)')
+    
     # Input fiducials node selector
     inputFiducialsNodeSelector = slicer.qMRMLNodeComboBox()
     inputFiducialsNodeSelector.objectName = 'inputFiducialsNodeSelector'
@@ -141,9 +155,17 @@ class EndoscopyWidget(ScriptedLoadableModuleWidget):
     viewAngleSlider = ctk.ctkSliderWidget()
     viewAngleSlider.connect('valueChanged(double)', self.viewAngleSliderValueChanged)
     viewAngleSlider.decimals = 0
-    viewAngleSlider.minimum = 30
-    viewAngleSlider.maximum = 180
+    viewAngleSlider.minimum = 1
+    viewAngleSlider.maximum = 90
     flythroughFormLayout.addRow("View Angle:", viewAngleSlider)
+	
+	# View angle of left-right eyes slider 
+    eyesAngleSlider = ctk.ctkSliderWidget()
+    eyesAngleSlider.connect('valueChanged(double)', self.eyesAngleSliderValueChanged)
+    eyesAngleSlider.decimals = 0
+    eyesAngleSlider.minimum = 1
+    eyesAngleSlider.maximum = 60
+    flythroughFormLayout.addRow("eyes Angle:", eyesAngleSlider)
 
     # Play button
     playButton = qt.QPushButton("Play")
