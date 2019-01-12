@@ -171,13 +171,7 @@ class EndoscopyWidget(ScriptedLoadableModuleWidget):
   def setCameraNode(self, newCameraNode):
     """Allow to set the current camera node.
     Connected to signal 'currentNodeChanged()' emitted by camera node selector."""
-
-    #  Remove previous observer
-    if self.cameraNode and self.cameraNodeObserverTag:
-      self.cameraNode.RemoveObserver(self.cameraNodeObserverTag)
-    if self.camera and self.cameraObserverTag:
-      self.camera.RemoveObserver(self.cameraObserverTag)
-
+    
     newCamera = None
     if newCameraNode:
       newCamera = newCameraNode.GetCamera()
